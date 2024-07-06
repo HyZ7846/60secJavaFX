@@ -34,17 +34,10 @@ public class SimpleGame extends Application {
     private List<Rectangle> terrains = new ArrayList<>();
     private List<Rectangle> walls = new ArrayList<>();
     private List<Zombie> zombies = new ArrayList<>();
-    private final int numTerrains = 20;
-    private final int numWalls = 10;
-    private final int initialNumZombies = 3; // Initial number of zombies
-    private final int minTerrainSize = 30;
-    private final int maxTerrainSize = 80;
-    private final int wallThickness = 30; // Thickness of the wall forming the boundary
 
     private boolean gameOver = false; // Game over flag
     private boolean victory = false; // Victory flag
     private long startTime; // Start time for the timer
-    private final long gameTime = 60000; // 60 seconds game time in milliseconds
     private AnimationTimer gameLoop;
     private Button playAgainButton;
     private long lastZombieSpawnTime = 0; // Last zombie spawn time
@@ -177,11 +170,11 @@ public class SimpleGame extends Application {
         Random random = new Random();
 
         // Generate terrains
-        while (terrains.size() < numTerrains) {
-            int width = random.nextInt(maxTerrainSize - minTerrainSize) + minTerrainSize;
-            int height = random.nextInt(maxTerrainSize - minTerrainSize) + minTerrainSize;
-            int x = random.nextInt(canvasWidth - width - wallThickness * 2) + wallThickness;
-            int y = random.nextInt(canvasHeight - height - wallThickness * 2) + wallThickness;
+        while (terrains.size() < 20) {
+            int width = random.nextInt(80 - 30) + 30;
+            int height = random.nextInt(80 - 30) + 30;
+            int x = random.nextInt(canvasWidth - width - 30 * 2) + 30;
+            int y = random.nextInt(canvasHeight - height - 30 * 2) + 30;
 
             Rectangle newTerrain = new Rectangle(x, y, width, height);
             if (isNonOverlapping(newTerrain, terrains) && isNonOverlapping(newTerrain, walls)) {
@@ -190,18 +183,18 @@ public class SimpleGame extends Application {
         }
 
         // Generate walls
-        while (walls.size() < numWalls) {
-            int width = random.nextInt(maxTerrainSize - minTerrainSize) + minTerrainSize;
-            int height = random.nextInt(maxTerrainSize - minTerrainSize) + minTerrainSize;
+        while (walls.size() < 10) {
+            int width = random.nextInt(80 - 30) + 30;
+            int height = random.nextInt(80 - 30) + 30;
             if (random.nextBoolean()) { // Randomly decide to create a longer wall
                 if (random.nextBoolean()) {
-                    width = wallThickness;
+                    width = 30;
                 } else {
-                    height = wallThickness;
+                    height = 30;
                 }
             }
-            int x = random.nextInt(canvasWidth - width - wallThickness * 2) + wallThickness;
-            int y = random.nextInt(canvasHeight - height - wallThickness * 2) + wallThickness;
+            int x = random.nextInt(canvasWidth - width - 30 * 2) + 30;
+            int y = random.nextInt(canvasHeight - height - 30 * 2) + 30;
 
             Rectangle newWall = new Rectangle(x, y, width, height);
             if (isNonOverlapping(newWall, terrains) && isNonOverlapping(newWall, walls)) {
@@ -212,17 +205,17 @@ public class SimpleGame extends Application {
 
     private void generateBoundaryWalls() {
         // Top wall
-        walls.add(new Rectangle(0, 0, canvasWidth, wallThickness));
+        walls.add(new Rectangle(0, 0, canvasWidth, 30));
         // Bottom wall
-        walls.add(new Rectangle(0, canvasHeight - wallThickness, canvasWidth, wallThickness));
+        walls.add(new Rectangle(0, canvasHeight - 30, canvasWidth, 30));
         // Left wall
-        walls.add(new Rectangle(0, 0, wallThickness, canvasHeight));
+        walls.add(new Rectangle(0, 0, 30, canvasHeight));
         // Right wall
-        walls.add(new Rectangle(canvasWidth - wallThickness, 0, wallThickness, canvasHeight));
+        walls.add(new Rectangle(canvasWidth - 30, 0, 30, canvasHeight));
     }
 
     private void generateRandomZombies() {
-        for (int i = 0; i < initialNumZombies; i++) {
+        for (int i = 0; i < 3; i++) {
             spawnNewZombie();
         }
     }
@@ -249,8 +242,8 @@ public class SimpleGame extends Application {
         Random random = new Random();
         boolean validPosition;
         do {
-            playerX = random.nextInt(canvasWidth - (int) playerWidth - wallThickness * 2) + wallThickness;
-            playerY = random.nextInt(canvasHeight - (int) playerHeight - wallThickness * 2) + wallThickness;
+            playerX = random.nextInt(canvasWidth - (int) playerWidth - 30 * 2) + 30;
+            playerY = random.nextInt(canvasHeight - (int) playerHeight - 30 * 2) + 30;
             Rectangle playerRect = new Rectangle(playerX, playerY, playerWidth, playerHeight);
             validPosition = walls.stream().noneMatch(wall -> wall.getBoundsInLocal().intersects(playerRect.getBoundsInLocal()))
                     && terrains.stream().noneMatch(terrain -> terrain.getBoundsInLocal().intersects(playerRect.getBoundsInLocal()))
@@ -282,10 +275,10 @@ public class SimpleGame extends Application {
         }
 
         // Prevent player from moving outside the window
-        if (newX < wallThickness) newX = wallThickness;
-        if (newX + playerWidth > canvasWidth - wallThickness) newX = canvasWidth - playerWidth - wallThickness;
-        if (newY < wallThickness) newY = wallThickness;
-        if (newY + playerHeight > canvasHeight - wallThickness) newY = canvasHeight - playerHeight - wallThickness;
+        if (newX < 30) newX = 30;
+        if (newX + playerWidth > canvasWidth - 30) newX = canvasWidth - playerWidth - 30;
+        if (newY < 30) newY = 30;
+        if (newY + playerHeight > canvasHeight - 30) newY = canvasHeight - playerHeight - 30;
 
         // Check for collisions with walls and terrains
         Rectangle playerRect = new Rectangle(newX, newY, playerWidth, playerHeight);
@@ -308,7 +301,7 @@ public class SimpleGame extends Application {
 
         // Check for victory
         long elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime >= gameTime && !gameOver) {
+        if (elapsedTime >= 60000 && !gameOver) {
             victory = true;
         }
     }
@@ -332,8 +325,8 @@ public class SimpleGame extends Application {
         double x, y;
 
         do {
-            x = random.nextInt(canvasWidth - (int) playerWidth - wallThickness * 2) + wallThickness;
-            y = random.nextInt(canvasHeight - (int) playerHeight - wallThickness * 2) + wallThickness;
+            x = random.nextInt(canvasWidth - (int) playerWidth - 30 * 2) + 30;
+            y = random.nextInt(canvasHeight - (int) playerHeight - 30 * 2) + 30;
             Rectangle zombieRect = new Rectangle(x, y, playerWidth, playerHeight);
             validPosition = isNonOverlapping(zombieRect, terrains) && isNonOverlapping(zombieRect, walls) && isNonOverlapping(zombieRect, zombies)
                     && !isNearPlayer(zombieRect);
@@ -384,7 +377,7 @@ public class SimpleGame extends Application {
         // Draw timer
         if (!gameOver && !victory) {
             long elapsedTime = System.currentTimeMillis() - startTime;
-            long remainingTime = (gameTime - elapsedTime) / 1000; // Convert to seconds
+            long remainingTime = (60000 - elapsedTime) / 1000; // Convert to seconds
             gc.setFill(Color.WHITE);
             gc.setFont(new Font("Arial", 40)); // Increased font size for visibility
             gc.fillText("Time: " + remainingTime, 10, 40);
@@ -496,10 +489,10 @@ public class SimpleGame extends Application {
             }
 
             // Prevent zombie from moving outside the window
-            if (newX < wallThickness) newX = wallThickness;
-            if (newX + width > canvasWidth - wallThickness) newX = canvasWidth - width - wallThickness;
-            if (newY < wallThickness) newY = wallThickness;
-            if (newY + height > canvasHeight - wallThickness) newY = canvasHeight - height - wallThickness;
+            if (newX < 30) newX = 30;
+            if (newX + width > canvasWidth - 30) newX = canvasWidth - width - 30;
+            if (newY < 30) newY = 30;
+            if (newY + height > canvasHeight - 30) newY = canvasHeight - height - 30;
 
             // Check for collisions with walls, terrains, and other zombies
             Rectangle zombieRect = new Rectangle(newX, newY, width, height);
